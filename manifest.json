@@ -1,0 +1,25 @@
+{
+  "name": "Tech ProjetAR",
+  "short_name": "ProjetAR",
+  "description": "Visualize o projeto da Tech Comunicação Visual em 3D e em tamanho real no seu espaço.",
+  "start_url": "./p.html",
+  "display": "standalone",
+  "background_color": "#0D0F12",
+  "theme_color": "#0D0F12",
+  "orientation": "portrait",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

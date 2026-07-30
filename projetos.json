@@ -1,0 +1,94 @@
+[
+  {
+    "slug": "posto-avenida-totem",
+    "titulo": "Totem de Preços 4,75 m",
+    "cliente": "Posto Avenida",
+    "codigo": "TC-2026-0084",
+    "produto": "Totem de preços",
+    "descricao": "Totem de preços com estrutura metálica, revestimento em ACM e iluminação em LED. Três faixas de combustível com dígitos removíveis.",
+    "modelo": {
+      "glb": "modelo-posto-avenida-totem.glb",
+      "usdz": "",
+      "poster": ""
+    },
+    "dimensoes": {
+      "altura": 4.75,
+      "largura": 1.22,
+      "profundidade": 0.25
+    },
+    "ficha": [
+      {
+        "rotulo": "Estrutura",
+        "valor": "Metálica com tratamento anticorrosivo"
+      },
+      {
+        "rotulo": "Revestimento",
+        "valor": "ACM 3 mm"
+      },
+      {
+        "rotulo": "Iluminação",
+        "valor": "LED alto brilho"
+      },
+      {
+        "rotulo": "Faces",
+        "valor": "Dupla face"
+      },
+      {
+        "rotulo": "Combustíveis",
+        "valor": "3 faixas"
+      },
+      {
+        "rotulo": "Fixação",
+        "valor": "Base em concreto com chumbadores"
+      }
+    ],
+    "escalas": {
+      "maquete": [
+        10,
+        20,
+        50
+      ],
+      "padrao": 1
+    },
+    "permissoes": {
+      "girar": true,
+      "mover": true,
+      "redimensionar_real": false,
+      "captura": true
+    },
+    "acabamentos": [
+      {
+        "id": "vermelho",
+        "nome": "ACM Vermelho",
+        "cor": "#D31B21",
+        "material": "ACM_Principal"
+      },
+      {
+        "id": "azul",
+        "nome": "ACM Azul",
+        "cor": "#0B4FA1",
+        "material": "ACM_Principal"
+      },
+      {
+        "id": "cinza",
+        "nome": "ACM Cinza",
+        "cor": "#5A6069",
+        "material": "ACM_Principal"
+      },
+      {
+        "id": "branco",
+        "nome": "ACM Branco",
+        "cor": "#ECECEC",
+        "material": "ACM_Principal"
+      },
+      {
+        "id": "amarelo",
+        "nome": "Identidade personalizada",
+        "cor": "#F2B705",
+        "material": "ACM_Principal"
+      }
+    ],
+    "publicado": true,
+    "criado_em": "2026-07-30"
+  }
+]
