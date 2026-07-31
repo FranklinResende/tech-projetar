@@ -66,13 +66,13 @@
       alt="${esc(p.titulo)}"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"
       camera-controls touch-action="pan-y"
-      shadow-intensity="1.7" shadow-softness="0.45" exposure="1.35"
+      shadow-intensity="2.2" shadow-softness="0.32" exposure="1.15"
       tone-mapping="neutral" environment-image="estudio.hdr"
       max-camera-orbit="auto 92deg auto"
       interaction-prompt="auto" loading="eager">
 
     <effect-composer id="efeitos">
-      <ssao-effect strength="1.5"></ssao-effect>
+      <ssao-effect strength="4.5"></ssao-effect>
       <smaa-effect></smaa-effect>
     </effect-composer>
 
@@ -236,6 +236,6 @@
   document.body.appendChild(dados);
 
   const js = document.createElement('script');
-  js.src = 'viewer.js?v=1785504385';
+  js.src = 'viewer.js?v=1785515346';
   document.body.appendChild(js);
 })();
