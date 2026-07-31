@@ -239,6 +239,70 @@
     if (cotasVisiveis) { posicionarCotas(); rastrear('viu_medidas'); }
   }
 
+  /* ---------------------------------------------------------------------
+     Realismo dos materiais
+     ---------------------------------------------------------------------
+     A exportação do SketchUp/SimLab entrega todos os materiais iguais:
+     metal 0, rugosidade 0,5. Aço, acrílico, vidro e painel impresso ficam
+     com o mesmo comportamento de luz — e o resultado parece papel.
+
+     Aqui o próprio nome do material (que vem do projeto) diz como ele deve
+     reagir à luz. Só entra em ação quando o modelo está realmente chapado;
+     se o projetista já ajustou os materiais, nada é alterado.
+  --------------------------------------------------------------------- */
+  const REGRAS_MATERIAL = [
+    { re: /espelho|mirror/i,                                    metal: 1.00, rug: 0.05 },
+    { re: /cromo|chrome|inox|niquel|níquel/i,                    metal: 0.95, rug: 0.12 },
+    { re: /metal|steel|a[çc]o|alum[ií]nio|ferro|galvani/i,       metal: 0.85, rug: 0.30 },
+    { re: /vidro|glass|acr[ií]lic|cristal|policarb/i,            metal: 0.00, rug: 0.06 },
+    { re: /led|luminoso|neon|lamp|light|luz/i,                   metal: 0.00, rug: 0.22 },
+    { re: /acm|pintura|paint|esmalte|laca|automotiv/i,           metal: 0.05, rug: 0.34 },
+    { re: /adesiv|vinil|lona|impress|grafic|gr[áa]fic/i,         metal: 0.00, rug: 0.45 },
+    { re: /concreto|cimento|piso|asfalto|blacktop|paver|tile/i,  metal: 0.00, rug: 0.93 },
+    { re: /grama|folha|planta|[áa]rvore|vegeta|daun|batang/i,    metal: 0.00, rug: 0.88 },
+    { re: /tecido|linen|fabric|couro|leather/i,                  metal: 0.00, rug: 0.90 },
+    { re: /borracha|rubber|pneu|tire/i,                          metal: 0.00, rug: 0.95 },
+  ];
+
+  function materiaisChapados(mats) {
+    // assinatura da exportação automática: tudo com o mesmo valor
+    if (mats.length < 3) return false;
+    const p0 = mats[0].pbrMetallicRoughness;
+    const rug0 = p0.roughnessFactor, met0 = p0.metallicFactor;
+    return mats.every((m) => {
+      const p = m.pbrMetallicRoughness;
+      return Math.abs(p.roughnessFactor - rug0) < 0.02
+          && Math.abs(p.metallicFactor - met0) < 0.02;
+    });
+  }
+
+  function aplicarRealismo() {
+    try {
+      const mats = (mv.model && mv.model.materials) || [];
+      if (!mats.length || !materiaisChapados(mats)) return;
+
+      let ajustados = 0;
+      mats.forEach((m) => {
+        const nome = m.name || '';
+        const regra = REGRAS_MATERIAL.find((r) => r.re.test(nome));
+        const p = m.pbrMetallicRoughness;
+        if (regra) {
+          p.setMetallicFactor(regra.metal);
+          p.setRoughnessFactor(regra.rug);
+          ajustados++;
+        } else {
+          // sem pista no nome: um leve brilho, o suficiente para a peça
+          // deixar de parecer recortada em papel
+          p.setRoughnessFactor(Math.max(0.28, p.roughnessFactor * 0.82));
+        }
+      });
+      console.info('[Tech ProjetAR] realismo aplicado a ' + mats.length
+                 + ' materiais (' + ajustados + ' reconhecidos pelo nome).');
+    } catch (e) {
+      // realismo é enfeite: nunca pode derrubar o visualizador
+    }
+  }
+
   // ------------------------------------------------------------- acabamento
   function aplicarAcabamento(botao) {
     const cor  = botao.dataset.cor;
@@ -337,6 +401,7 @@
     const orb = mv.getCameraOrbit();
     raioBase = ((orb && orb.radius) ? orb.radius : Math.max(dim.x, dim.y, dim.z) * 2.2) * k;
 
+    aplicarRealismo();
     enquadrar();
     posicionarCotas();
     alternarCotas(cotasVisiveis);
