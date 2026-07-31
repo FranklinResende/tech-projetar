@@ -290,6 +290,7 @@
         if (tentativa < 25) setTimeout(() => aplicarRealismo(tentativa + 1), 150);
         return;
       }
+      // já ajustado nesta carga? (nossa marca: existe metal na cena)
       if (!materiaisChapados(mats)) return;
 
       let ajustados = 0;
@@ -442,7 +443,14 @@
 
   // o evento 'load' nem sempre chega (modelo vindo do cache do navegador),
   // por isso além dele verificamos o estado por alguns segundos
-  mv.addEventListener('load', preparar);
+  // O model-viewer pode recarregar o modelo mais de uma vez; cada recarga
+  // devolve os materiais ao estado do arquivo. Por isso o realismo é
+  // reaplicado a cada carga, enquanto a preparação acontece uma vez só.
+  mv.addEventListener('load', () => {
+    preparar();
+    aplicarRealismo();
+    setTimeout(aplicarRealismo, 600);
+  });
   const relogio = setInterval(() => {
     preparar();
     if (preparado) clearInterval(relogio);
