@@ -199,8 +199,16 @@ h1 { font-size: 24px; line-height: 1.2; margin: 0 0 6px; font-weight: 800; lette
 .botoes-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* seletor de escala */
-.escalas { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.escalas { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none;
+           scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
 .escalas::-webkit-scrollbar { display: none; }
+.escalas .chip { scroll-snap-align: start; }
+/* Borda direita desbotada: sinaliza que há mais escalas para o lado.
+   A classe sai sozinha quando a lista chega ao fim (viewer.js). */
+.escalas.tem-mais {
+  -webkit-mask-image: linear-gradient(90deg, #000 76%, rgba(0,0,0,.15) 100%);
+          mask-image: linear-gradient(90deg, #000 76%, rgba(0,0,0,.15) 100%);
+}
 .chip {
   flex: 0 0 auto; padding: 10px 16px; border-radius: 999px;
   border: 1px solid var(--borda); background: var(--superficie);

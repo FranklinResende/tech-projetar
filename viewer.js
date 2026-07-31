@@ -470,12 +470,41 @@
     if (ev.detail.status === 'failed')          toast('A realidade aumentada não pôde iniciar.');
   });
 
+  /* No celular os botões de escala e de acabamento ficam abaixo do modelo.
+     Sem isto o cliente troca para maquete, ou muda a cor, e não vê nada
+     acontecer — a peça mudou fora da tela. */
+  function verPalco() {
+    const palco = document.querySelector('.palco');
+    if (!palco) return;
+    const r = palco.getBoundingClientRect();
+    const visivel = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0);
+    if (visivel > r.height * 0.55) return;      // já está à vista
+    palco.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* Quatro escalas não cabem na largura de um celular. A borda direita
+     desbotada avisa que a lista corre para o lado. */
+  function marcarRolagem() {
+    const e = $('#escalas');
+    if (!e) return;
+    const sobra = e.scrollWidth - e.clientWidth - e.scrollLeft;
+    e.classList.toggle('tem-mais', sobra > 8);
+  }
+
   // ------------------------------------------------------------- eventos
   document.querySelectorAll('#escalas .chip').forEach((c) =>
-    c.addEventListener('click', () => aplicarEscala(Number(c.dataset.escala))));
+    c.addEventListener('click', () => { aplicarEscala(Number(c.dataset.escala)); verPalco(); }));
+
+  const listaEscalas = $('#escalas');
+  if (listaEscalas) {
+    listaEscalas.addEventListener('scroll', marcarRolagem, { passive: true });
+    window.addEventListener('resize', marcarRolagem);
+    marcarRolagem();
+    setTimeout(marcarRolagem, 300);
+  }
 
   document.querySelectorAll('#acabamentos .acab').forEach((b) =>
-    b.addEventListener('click', () => aplicarAcabamento(b)));
+    b.addEventListener('click', () => { aplicarAcabamento(b); verPalco(); }));
 
   $('#btn-ar').addEventListener('click', abrirAR);
   $('#btn-ar-fixo').addEventListener('click', abrirAR);
