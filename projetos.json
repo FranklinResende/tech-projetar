@@ -1,5 +1,54 @@
 [
   {
+    "slug": "posto-araci",
+    "titulo": "Projeto completo do posto",
+    "cliente": "Posto Brasil — Araci",
+    "codigo": "TC-2026-0101",
+    "produto": "Projeto completo de posto",
+    "descricao": "Projeto completo do posto: cobertura, pista, loja de conveniência, comunicação visual e paisagismo.",
+    "modelo": {
+      "glb": "modelo-posto-araci.glb",
+      "usdz": "",
+      "poster": ""
+    },
+    "dimensoes": {
+      "altura": 10.58,
+      "largura": 202.55,
+      "profundidade": 104.89
+    },
+    "ficha": [
+      {
+        "rotulo": "Área do terreno",
+        "valor": "aprox. 202 × 105 m"
+      },
+      {
+        "rotulo": "Altura máxima",
+        "valor": "10,58 m (cobertura)"
+      },
+      {
+        "rotulo": "Escopo",
+        "valor": "Pista, cobertura, loja e comunicação"
+      }
+    ],
+    "escalas": {
+      "maquete": [
+        50,
+        100,
+        200
+      ],
+      "padrao": 1
+    },
+    "permissoes": {
+      "girar": true,
+      "mover": true,
+      "redimensionar_real": false,
+      "captura": true
+    },
+    "acabamentos": [],
+    "publicado": true,
+    "criado_em": "2026-07-30"
+  },
+  {
     "slug": "posto-avenida-totem",
     "titulo": "Totem de Preços 4,75 m",
     "cliente": "Posto Avenida",

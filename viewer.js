@@ -12,8 +12,10 @@
   let escalaAtual = 1;          // 1 = real; 10 = 1:10; 20 = 1:20 ...
   let caixa       = null;       // bounding box do modelo (metros, sem escala)
   let acabamento  = null;       // acabamento selecionado
-  let cotasVisiveis = false;
-  let raioBase    = 0;          // distância de câmera que enquadra o modelo em 1:1
+  let cotasVisiveis  = false;
+  let pessoaVisivel  = false;   // silhueta de 1,75 m ao lado do modelo
+  let raioBase       = 0;       // distância de câmera que enquadra o modelo em 1:1
+  const ALTURA_PESSOA = 1.75;   // metros
 
   // ------------------------------------------------------------- utilidades
   function toast(msg, ms = 2600) {
@@ -84,13 +86,26 @@
     $('#txt-escala').textContent = real ? 'Escala real 1:1' : 'Maquete 1:' + n;
     $('#txt-ar-escala').textContent = real ? '1:1' : '1:' + n;
 
-    const d = D.dimensoes;
-    $('#txt-escala-info').innerHTML = real
-      ? 'O produto aparece no <b>tamanho exato de fabricação</b>: '
-        + medida(d.altura) + ' de altura. Ideal para conferir no local da instalação.'
-      : 'Versão reduzida para apoiar sobre uma mesa: <b>'
-        + medida(d.altura / n) + ' de altura</b> ('
-        + medida(d.largura / n) + ' × ' + medida(d.profundidade / n) + ').';
+    const d     = D.dimensoes;
+    const maior = Math.max(d.altura, d.largura, d.profundidade);
+    let texto;
+    if (real) {
+      texto = 'O projeto aparece no <b>tamanho exato de fabricação</b>: '
+            + medida(d.altura) + ' de altura por ' + medida(d.largura) + ' de largura.';
+      if (maior > 20) {
+        texto += ' <b>Atenção:</b> uma peça deste porte só cabe inteira no terreno. '
+               + 'Para ver em reunião ou sobre a mesa, use uma das maquetes abaixo.';
+      } else {
+        texto += ' Ideal para conferir no local da instalação.';
+      }
+    } else {
+      texto = 'Versão reduzida: <b>' + medida(d.largura / n) + ' × ' + medida(d.profundidade / n)
+            + '</b>, com ' + medida(d.altura / n) + ' de altura.';
+      const area = Math.max(d.largura, d.profundidade) / n;
+      texto += area <= 1.2 ? ' Cabe sobre uma mesa.'
+             : (area <= 4 ? ' Cabe no chão de uma sala.' : ' Precisa de um espaço amplo.');
+    }
+    $('#txt-escala-info').innerHTML = texto;
 
     document.querySelectorAll('#escalas .chip').forEach((c) =>
       c.classList.toggle('ativo', Number(c.dataset.escala) === n));
@@ -135,6 +150,13 @@
     pos('hotspot-p3', min.x, min.y - folga, frente);
     pos('hotspot-p4', max.x, min.y - folga, frente);
 
+    // silhueta humana: fica ao lado do modelo, apoiada no mesmo chão
+    const xPessoa = max.x + folga * 2.2;
+    const alturaP = ALTURA_PESSOA * s;
+    pos('hotspot-h1', xPessoa, min.y, centro.z);
+    pos('hotspot-h2', xPessoa, min.y + alturaP, centro.z);
+    pos('hotspot-rot-pessoa', xPessoa, min.y + alturaP + folga * 0.5, centro.z);
+
     const d = D.dimensoes, k = escalaAtual;
     $('#cota-altura').textContent = medida(d.altura / k);
     $('#cota-largura').textContent = medida(d.largura / k);
@@ -157,6 +179,36 @@
       ll.setAttribute('x1', p3.canvasPosition.x); ll.setAttribute('y1', p3.canvasPosition.y);
       ll.setAttribute('x2', p4.canvasPosition.x); ll.setAttribute('y2', p4.canvasPosition.y);
     }
+    desenharPessoa();
+  }
+
+  /** Silhueta de 1,75 m desenhada entre dois pontos ancorados na cena 3D,
+      por isso ela acompanha a perspectiva e a escala escolhida. */
+  function desenharPessoa() {
+    const g = $('#pessoa');
+    if (!g) return;
+    if (!pessoaVisivel) { g.style.display = 'none'; return; }
+
+    const pe   = mv.queryHotspot('hotspot-h1');
+    const topo = mv.queryHotspot('hotspot-h2');
+    if (!pe || !topo) { g.style.display = 'none'; return; }
+
+    const alturaPx = pe.canvasPosition.y - topo.canvasPosition.y;
+    if (!(alturaPx > 6)) { g.style.display = 'none'; return; }
+
+    const k = alturaPx / 345;                       // o desenho tem 345 de altura
+    g.style.display = '';
+    g.setAttribute('transform',
+      'translate(' + (topo.canvasPosition.x - 50 * k) + ' ' + topo.canvasPosition.y + ') scale(' + k + ')');
+  }
+
+  function alternarPessoa() {
+    pessoaVisivel = !pessoaVisivel;
+    $('#btn-pessoa').classList.toggle('ativo', pessoaVisivel);
+    const rot = $('#rotulo-pessoa');
+    if (rot) rot.style.display = pessoaVisivel ? '' : 'none';
+    desenharPessoa();
+    if (pessoaVisivel) rastrear('viu_medidas', { referencia: 'pessoa' });
   }
 
   function alternarCotas(forcar) {
@@ -245,7 +297,11 @@
   const fecharModal = () => $('#modal').classList.remove('aberto');
 
   // ------------------------------------------------------------- inicialização
-  mv.addEventListener('load', () => {
+  let preparado = false;
+
+  function preparar() {
+    if (preparado || !mv.loaded || !mv.model) return;
+    preparado = true;
     // getDimensions() devolve o tamanho já com a escala aplicada;
     // guardamos sempre o tamanho real (1:1) do modelo.
     const k  = escalaAtual;
@@ -266,6 +322,9 @@
     enquadrar();
     posicionarCotas();
     alternarCotas(cotasVisiveis);
+    const rot = $('#rotulo-pessoa');
+    if (rot && !pessoaVisivel) rot.style.display = 'none';
+    desenharPessoa();
 
     // conferência: o GLB precisa bater com as medidas do projeto
     const declarada = Number(D.dimensoes.altura);
@@ -282,12 +341,24 @@
 
     if (!mv.canActivateAR) $('#ar-indisponivel').hidden = false;
     $('#carga').classList.add('pronta');
+    const ov = $('#carregando'); if (ov) { ov.classList.add('pronto'); setTimeout(() => ov.remove(), 500); }
+    ['#btn-ar', '#btn-ar-fixo'].forEach((s) => { const b = $(s); if (b) b.disabled = false; });
     rastrear('carregou_modelo');
-  });
+  }
+
+  // o evento 'load' nem sempre chega (modelo vindo do cache do navegador),
+  // por isso além dele verificamos o estado por alguns segundos
+  mv.addEventListener('load', preparar);
+  const relogio = setInterval(() => {
+    preparar();
+    if (preparado) clearInterval(relogio);
+  }, 150);
+  setTimeout(() => clearInterval(relogio), 40000);
 
   mv.addEventListener('progress', (ev) => {
     const t = ev.detail.totalProgress;
     const f = $('#carga-fill'); if (f) f.style.width = (t * 100).toFixed(0) + '%';
+    const p = $('#carga-pct');  if (p) p.textContent = Math.round(t * 100) + '%';
     if (t === 1) $('#carga').classList.add('pronta');
   });
 
@@ -309,6 +380,8 @@
   $('#btn-ar').addEventListener('click', abrirAR);
   $('#btn-ar-fixo').addEventListener('click', abrirAR);
   $('#btn-cotas').addEventListener('click', () => alternarCotas());
+  const btnPessoa = $('#btn-pessoa');
+  if (btnPessoa) btnPessoa.addEventListener('click', alternarPessoa);
   $('#btn-reset').addEventListener('click', () => { mv.fieldOfView = 'auto'; enquadrar(); });
   $('#btn-girar').addEventListener('click', (e) => {
     const on = !mv.hasAttribute('auto-rotate');
@@ -359,5 +432,8 @@
     rastrear('saiu', { segundos: Math.round((Date.now() - inicio) / 1000) }));
 
   // estado inicial
-  aplicarEscala(1, true);
+  if (!mv.loaded) {
+    ['#btn-ar', '#btn-ar-fixo'].forEach((s) => { const b = $(s); if (b) b.disabled = true; });
+  }
+  aplicarEscala(Number(D.escalaPadrao) > 0 ? Number(D.escalaPadrao) : 1, true);
 })();
