@@ -20,11 +20,16 @@
       '<h1>Projeto indisponível</h1><p class="subtitulo">' + esc(msg) + '</p></div>';
   }
 
+  // sem cache nos cadastros: o cliente precisa ver sempre a versão atual.
+  // (o modelo 3D continua em cache, porque o nome do arquivo muda a cada projeto)
+  const buscar = (arq) =>
+    fetch(arq + '?v=' + Date.now(), { cache: 'no-store' }).then((r) => r.json());
+
   let cfg, lista;
   try {
     [cfg, lista] = await Promise.all([
-      fetch('config.json').then((r) => r.json()),
-      fetch('projetos.json').then((r) => r.json()),
+      buscar('config.json'),
+      buscar('projetos.json'),
     ]);
   } catch (e) {
     return erro('Não foi possível carregar os dados do projeto.');
@@ -212,6 +217,6 @@
   document.body.appendChild(dados);
 
   const js = document.createElement('script');
-  js.src = 'viewer.js';
+  js.src = 'viewer.js?v=1785456939';
   document.body.appendChild(js);
 })();
