@@ -280,10 +280,17 @@
     return maisComum / mats.length >= 0.6;
   }
 
-  function aplicarRealismo() {
+  function aplicarRealismo(tentativa) {
+    tentativa = tentativa || 0;
     try {
       const mats = (mv.model && mv.model.materials) || [];
-      if (!mats.length || !materiaisChapados(mats)) return;
+
+      // a lista de materiais nem sempre está pronta junto com o modelo
+      if (!mats.length) {
+        if (tentativa < 25) setTimeout(() => aplicarRealismo(tentativa + 1), 150);
+        return;
+      }
+      if (!materiaisChapados(mats)) return;
 
       let ajustados = 0;
       mats.forEach((m) => {
