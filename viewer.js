@@ -264,21 +264,9 @@
     { re: /borracha|rubber|pneu|tire/i,                          metal: 0.00, rug: 0.95 },
   ];
 
-  function materiaisChapados(mats) {
-    // Assinatura da exportação automática: nada é metálico e quase todos os
-    // materiais compartilham a mesma rugosidade. Se o projetista já ajustou
-    // os materiais, existe metal na cena e nada aqui é alterado.
-    if (mats.length < 3) return false;
-    if (mats.some((m) => m.pbrMetallicRoughness.metallicFactor > 0.1)) return false;
-
-    const contagem = {};
-    mats.forEach((m) => {
-      const k = m.pbrMetallicRoughness.roughnessFactor.toFixed(2);
-      contagem[k] = (contagem[k] || 0) + 1;
-    });
-    const maisComum = Math.max.apply(null, Object.values(contagem));
-    return maisComum / mats.length >= 0.6;
-  }
+  // materiais já tratados, para não mexer duas vezes nem perder os que
+  // chegam atrasados (o modelo carrega em partes)
+  const jaTratados = new WeakSet();
 
   function aplicarRealismo(tentativa) {
     tentativa = tentativa || 0;
@@ -290,26 +278,36 @@
         if (tentativa < 25) setTimeout(() => aplicarRealismo(tentativa + 1), 150);
         return;
       }
-      // já ajustado nesta carga? (nossa marca: existe metal na cena)
-      if (!materiaisChapados(mats)) return;
 
-      let ajustados = 0;
+      let novos = 0, porNome = 0;
       mats.forEach((m) => {
-        const nome = m.name || '';
-        const regra = REGRAS_MATERIAL.find((r) => r.re.test(nome));
+        if (jaTratados.has(m)) return;
+        jaTratados.add(m);
+        novos++;
+
         const p = m.pbrMetallicRoughness;
+
+        // material já configurado pelo projetista: respeitar como está
+        if (p.metallicFactor > 0.1) return;
+
+        const regra = REGRAS_MATERIAL.find((r) => r.re.test(m.name || ''));
         if (regra) {
           p.setMetallicFactor(regra.metal);
           p.setRoughnessFactor(regra.rug);
-          ajustados++;
+          porNome++;
         } else {
           // sem pista no nome: um leve brilho, o suficiente para a peça
           // deixar de parecer recortada em papel
           p.setRoughnessFactor(Math.max(0.28, p.roughnessFactor * 0.82));
         }
       });
-      console.info('[Tech ProjetAR] realismo aplicado a ' + mats.length
-                 + ' materiais (' + ajustados + ' reconhecidos pelo nome).');
+
+      if (novos) {
+        console.info('[Tech ProjetAR] realismo: ' + novos + ' materiais tratados, '
+                   + porNome + ' reconhecidos pelo nome.');
+      }
+      // o modelo pode continuar chegando em partes
+      if (tentativa < 12) setTimeout(() => aplicarRealismo(tentativa + 1), 400);
     } catch (e) {
       // realismo é enfeite: nunca pode derrubar o visualizador
     }
