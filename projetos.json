@@ -1,5 +1,41 @@
 [
   {
+    "slug": "pdv-posto-esmeralda",
+    "titulo": "PDV Tech",
+    "cliente": "Posto Esmeralda",
+    "codigo": "TC-2026-0102",
+    "produto": "PDV — ponto de venda",
+    "descricao": "PDV Tech desenvolvido para o Posto Esmeralda. Veja a peça no tamanho real dentro da loja antes da fabricação.",
+    "modelo": {
+      "glb": "modelo-pdv-posto-esmeralda.glb",
+      "usdz": "",
+      "poster": ""
+    },
+    "dimensoes": {
+      "altura": 2.02,
+      "largura": 0.6,
+      "profundidade": 0.65
+    },
+    "ficha": [],
+    "escalas": {
+      "maquete": [
+        5,
+        10,
+        20
+      ],
+      "padrao": 1
+    },
+    "permissoes": {
+      "girar": true,
+      "mover": true,
+      "redimensionar_real": false,
+      "captura": true
+    },
+    "acabamentos": [],
+    "publicado": true,
+    "criado_em": "2026-07-31"
+  },
+  {
     "slug": "posto-araci",
     "titulo": "Projeto completo do posto",
     "cliente": "Posto Brasil — Araci",
