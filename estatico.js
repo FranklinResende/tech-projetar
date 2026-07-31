@@ -66,8 +66,9 @@
       alt="${esc(p.titulo)}"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"
       camera-controls touch-action="pan-y"
-      shadow-intensity="1.1" shadow-softness="0.85" exposure="1.05"
-      environment-image="neutral" max-camera-orbit="auto 92deg auto"
+      shadow-intensity="1.7" shadow-softness="0.45" exposure="0.95"
+      tone-mapping="neutral" environment-image="estudio.hdr"
+      max-camera-orbit="auto 92deg auto"
       interaction-prompt="auto" loading="eager">
 
     <div class="carga" slot="progress-bar" id="carga"><div class="carga-fill" id="carga-fill"></div></div>
@@ -230,6 +231,6 @@
   document.body.appendChild(dados);
 
   const js = document.createElement('script');
-  js.src = 'viewer.js?v=1785499450';
+  js.src = 'viewer.js?v=1785502157';
   document.body.appendChild(js);
 })();
