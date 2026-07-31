@@ -265,15 +265,19 @@
   ];
 
   function materiaisChapados(mats) {
-    // assinatura da exportação automática: tudo com o mesmo valor
+    // Assinatura da exportação automática: nada é metálico e quase todos os
+    // materiais compartilham a mesma rugosidade. Se o projetista já ajustou
+    // os materiais, existe metal na cena e nada aqui é alterado.
     if (mats.length < 3) return false;
-    const p0 = mats[0].pbrMetallicRoughness;
-    const rug0 = p0.roughnessFactor, met0 = p0.metallicFactor;
-    return mats.every((m) => {
-      const p = m.pbrMetallicRoughness;
-      return Math.abs(p.roughnessFactor - rug0) < 0.02
-          && Math.abs(p.metallicFactor - met0) < 0.02;
+    if (mats.some((m) => m.pbrMetallicRoughness.metallicFactor > 0.1)) return false;
+
+    const contagem = {};
+    mats.forEach((m) => {
+      const k = m.pbrMetallicRoughness.roughnessFactor.toFixed(2);
+      contagem[k] = (contagem[k] || 0) + 1;
     });
+    const maisComum = Math.max.apply(null, Object.values(contagem));
+    return maisComum / mats.length >= 0.6;
   }
 
   function aplicarRealismo() {
