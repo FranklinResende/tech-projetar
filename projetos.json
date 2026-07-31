@@ -30,6 +30,16 @@
         "valor": "Pista, cobertura, loja e comunicação"
       }
     ],
+    "foco": {
+      "centro": [
+        -13.35,
+        4.91,
+        1.75
+      ],
+      "raio": 86,
+      "largura": 48.94,
+      "profundidade": 82.0
+    },
     "escalas": {
       "maquete": [
         50,

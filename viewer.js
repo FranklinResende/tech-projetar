@@ -114,16 +114,29 @@
     if (!silencioso) rastrear('mudou_escala', { escala: n });
   }
 
-  /** Enquadra a câmera de acordo com a escala atual (raio em metros). */
+  /** Enquadra a câmera de acordo com a escala atual (raio em metros).
+      Se o projeto tiver um foco definido (a área construída, e não o
+      terreno inteiro), a câmera abre já olhando para ele. */
   function enquadrar() {
     if (!caixa) return;
-    const s    = 1 / escalaAtual;
-    const raio = Math.max(0.02, raioBase * s);
-    const alvo = caixa.centro;
+    const s = 1 / escalaAtual;
+
+    let alvo = caixa.centro;
+    let raio = raioBase;
+    let angulo = '18deg 74deg ';
+
+    const f = D.foco;
+    if (f && Array.isArray(f.centro) && f.raio > 0) {
+      alvo   = { x: f.centro[0], y: f.centro[1], z: f.centro[2] };
+      raio   = f.raio;
+      angulo = '30deg 68deg ';        // ângulo de perspectiva para arquitetura
+    }
+
+    raio = Math.max(0.02, raio * s);
     mv.cameraTarget = (alvo.x * s) + 'm ' + (alvo.y * s) + 'm ' + (alvo.z * s) + 'm';
-    mv.cameraOrbit  = '18deg 74deg ' + raio.toFixed(4) + 'm';
-    mv.minCameraOrbit = 'auto auto ' + (raio * 0.25).toFixed(4) + 'm';
-    mv.maxCameraOrbit = 'auto 92deg ' + (raio * 3).toFixed(4) + 'm';
+    mv.cameraOrbit  = angulo + raio.toFixed(4) + 'm';
+    mv.minCameraOrbit = 'auto auto ' + (raio * 0.15).toFixed(4) + 'm';
+    mv.maxCameraOrbit = 'auto 92deg ' + (raio * 4).toFixed(4) + 'm';
   }
 
   // ------------------------------------------------------------- cotas
@@ -150,12 +163,17 @@
     pos('hotspot-p3', min.x, min.y - folga, frente);
     pos('hotspot-p4', max.x, min.y - folga, frente);
 
-    // silhueta humana: fica ao lado do modelo, apoiada no mesmo chão
-    const xPessoa = max.x + folga * 2.2;
+    // silhueta humana: fica ao lado da área construída (ou do modelo),
+    // sempre apoiada no mesmo chão
+    const f = D.foco;
+    const xPessoa = (f && Array.isArray(f.centro))
+      ? (f.centro[0] + (f.largura || 0) / 2 + 3) * s
+      : max.x + folga * 2.2;
+    const zPessoa = (f && Array.isArray(f.centro)) ? f.centro[2] * s : centro.z;
     const alturaP = ALTURA_PESSOA * s;
-    pos('hotspot-h1', xPessoa, min.y, centro.z);
-    pos('hotspot-h2', xPessoa, min.y + alturaP, centro.z);
-    pos('hotspot-rot-pessoa', xPessoa, min.y + alturaP + folga * 0.5, centro.z);
+    pos('hotspot-h1', xPessoa, min.y, zPessoa);
+    pos('hotspot-h2', xPessoa, min.y + alturaP, zPessoa);
+    pos('hotspot-rot-pessoa', xPessoa, min.y + alturaP + 0.4 * s, zPessoa);
 
     const d = D.dimensoes, k = escalaAtual;
     $('#cota-altura').textContent = medida(d.altura / k);

@@ -117,6 +117,18 @@
   <section class="secao">
     <h1>${esc(p.titulo)}</h1>
     <p class="subtitulo">${esc(p.cliente)} · ${esc(p.produto || '')}</p>
+
+    <div class="identificacao">
+      ${p.codigo ? '<span class="tag">' + esc(p.codigo) + '</span>' : ''}
+      <span class="tag ok">Medidas reais conferidas</span>
+    </div>
+
+    <dl class="medidas-resumo">
+      <div><dt>Altura</dt><dd>${num(d.altura)}<small>m</small></dd></div>
+      <div><dt>Largura</dt><dd>${num(d.largura)}<small>m</small></dd></div>
+      <div><dt>Profund.</dt><dd>${num(d.profundidade)}<small>m</small></dd></div>
+    </dl>
+
     ${p.descricao ? '<p style="font-size:14px;color:var(--texto2);margin:0 0 16px">' + esc(p.descricao) + '</p>' : ''}
     <div class="botoes">
       <button class="btn btn-primario" id="btn-ar">
@@ -212,11 +224,12 @@
     slug: p.slug, titulo: p.titulo, cliente: p.cliente, codigo: p.codigo,
     dimensoes: d, usdz: p.modelo.usdz || '', permissoes: perm,
     escalaPadrao: (p.escalas && p.escalas.padrao) || 1,
+    foco: p.foco || null,
     whatsapp: cfg.whatsapp, link: location.href, apiTrack: '',
   });
   document.body.appendChild(dados);
 
   const js = document.createElement('script');
-  js.src = 'viewer.js?v=1785456939';
+  js.src = 'viewer.js?v=1785499450';
   document.body.appendChild(js);
 })();
