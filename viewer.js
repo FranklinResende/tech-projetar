@@ -411,6 +411,14 @@
     const orb = mv.getCameraOrbit();
     raioBase = ((orb && orb.radius) ? orb.radius : Math.max(dim.x, dim.y, dim.z) * 2.2) * k;
 
+    /* Trava de aproximação. Num posto inteiro de 200 m o giro acontece em
+       torno do centro do terreno: continuar aproximando não chega mais perto
+       de nada, só enfia a câmera para dentro do prédio — e o cliente vê meia
+       tela preta achando que o projeto está quebrado.
+       O limite fica em 12% do enquadramento, o suficiente para ler uma
+       testeira de perto sem atravessar parede. */
+    mv.setAttribute('min-camera-orbit', 'auto auto ' + (raioBase * 0.12) + 'm');
+
     aplicarRealismo();
     enquadrar();
     posicionarCotas();

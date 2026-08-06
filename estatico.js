@@ -68,7 +68,7 @@
       camera-controls touch-action="pan-y"
       shadow-intensity="2.2" shadow-softness="0.32" exposure="1.15"
       tone-mapping="neutral" environment-image="estudio.hdr"
-      max-camera-orbit="auto 92deg auto"
+      max-camera-orbit="auto 89deg auto"
       interaction-prompt="auto" loading="eager">
 
     <effect-composer id="efeitos">
@@ -236,6 +236,6 @@
   document.body.appendChild(dados);
 
   const js = document.createElement('script');
-  js.src = 'viewer.js?v=1785518413';
+  js.src = 'viewer.js?v=1785977671';
   document.body.appendChild(js);
 })();
