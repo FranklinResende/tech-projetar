@@ -415,9 +415,11 @@
        torno do centro do terreno: continuar aproximando não chega mais perto
        de nada, só enfia a câmera para dentro do prédio — e o cliente vê meia
        tela preta achando que o projeto está quebrado.
-       O limite fica em 12% do enquadramento, o suficiente para ler uma
-       testeira de perto sem atravessar parede. */
-    mv.setAttribute('min-camera-orbit', 'auto auto ' + (raioBase * 0.12) + 'm');
+       O limite é generoso de propósito: 3% do enquadramento, com piso de
+       40 cm. No posto de Araci isso dá uns 14 m — perto o bastante para ler
+       uma testeira, longe o bastante para não atravessar a parede. */
+    mv.setAttribute('min-camera-orbit',
+                    'auto auto ' + Math.max(raioBase * 0.03, 0.4) + 'm');
 
     aplicarRealismo();
     enquadrar();
