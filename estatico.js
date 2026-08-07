@@ -236,6 +236,6 @@
   document.body.appendChild(dados);
 
   const js = document.createElement('script');
-  js.src = 'viewer.js?v=1786070000';
+  js.src = 'viewer.js?v=1786071500';
   document.body.appendChild(js);
 })();
