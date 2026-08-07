@@ -359,9 +359,40 @@
   }
 
   // ------------------------------------------------------------- foto
+  /* Desenha o mesmo fundo de estudio do CSS (.palco) num canvas.
+     O model-viewer entrega a captura com fundo transparente; sem isto a
+     imagem que o cliente salva e reenvia sai com um vazio no lugar do fundo. */
+  function pintarFundo(ctx, w, h) {
+    const ceu = ctx.createLinearGradient(0, 0, 0, h);
+    ceu.addColorStop(0.00, '#141B26');
+    ceu.addColorStop(0.30, '#26303F');
+    ceu.addColorStop(0.56, '#3B4757');
+    ceu.addColorStop(0.78, '#2A3340');
+    ceu.addColorStop(1.00, '#131923');
+    ctx.fillStyle = ceu;
+    ctx.fillRect(0, 0, w, h);
+    ctx.save();
+    ctx.translate(w / 2, h * 0.68);
+    ctx.scale(1, (h * 0.60) / (w * 0.95));
+    const luz = ctx.createRadialGradient(0, 0, 0, 0, 0, w * 0.95);
+    luz.addColorStop(0, 'rgba(150,175,205,.34)');
+    luz.addColorStop(1, 'rgba(150,175,205,0)');
+    ctx.fillStyle = luz;
+    ctx.fillRect(-w, -h, w * 2, h * 2);
+    ctx.restore();
+  }
+
   async function tirarFoto() {
     try {
-      const blob = await mv.toBlob({ idealAspect: true, mimeType: 'image/png' });
+      const bruta = await mv.toBlob({ idealAspect: true, mimeType: 'image/png' });
+      const img   = await createImageBitmap(bruta);
+      const tela  = document.createElement('canvas');
+      tela.width  = img.width;
+      tela.height = img.height;
+      const ctx   = tela.getContext('2d');
+      pintarFundo(ctx, tela.width, tela.height);
+      ctx.drawImage(img, 0, 0);
+      const blob = await new Promise((ok) => tela.toBlob(ok, 'image/png'));
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
       a.href = url;
