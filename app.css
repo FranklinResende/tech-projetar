@@ -56,7 +56,12 @@ img { max-width: 100%; display: block; }
 /* ------------------------------------------------------------------ visualizador */
 .palco {
   position: relative;
-  background: radial-gradient(120% 90% at 50% 0%, #232830 0%, #0D0F12 70%);
+  /* Fundo de estudio: ceu em cima, chao embaixo e uma poca de luz atras
+     da peca. Antes era quase preto e, ao aproximar, metade da tela virava
+     um vazio escuro que fazia o projeto parecer quebrado. */
+  background:
+    radial-gradient(95% 60% at 50% 68%, rgba(150,175,205,.34) 0%, rgba(150,175,205,0) 66%),
+    linear-gradient(180deg, #141B26 0%, #26303F 30%, #3B4757 56%, #2A3340 78%, #131923 100%);
   border-bottom: 1px solid var(--borda);
 }
 model-viewer {
