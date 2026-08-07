@@ -255,7 +255,10 @@
     { re: /cromo|chrome|inox|niquel|níquel/i,                    metal: 0.95, rug: 0.12 },
     { re: /metal|steel|a[çc]o|alum[ií]nio|ferro|galvani/i,       metal: 0.85, rug: 0.30 },
     { re: /vidro|glass|acr[ií]lic|cristal|policarb/i,            metal: 0.00, rug: 0.06 },
-    { re: /led|luminoso|neon|lamp|light|luz/i,                   metal: 0.00, rug: 0.22 },
+    // "light" sozinho nao entra: em ingles aparece em nome de COR
+    // ("Quartz Light Grey", "Light Oak") e transformava piso em luminoso.
+    { re: /(^|[^a-z])led([^a-z]|$)|luminoso|neon|lamp|lumin[áa]ri|(^|[^a-z])luz([^a-z]|$)|lightbox|backlight/i,
+                                                                 metal: 0.00, rug: 0.22 },
     { re: /acm|pintura|paint|esmalte|laca|automotiv/i,           metal: 0.05, rug: 0.34 },
     { re: /adesiv|vinil|lona|impress|grafic|gr[áa]fic/i,         metal: 0.00, rug: 0.45 },
     { re: /concret|cimento|cement|piso|floor|asfalto|asphalt|blacktop|pavement|cal[çc]ada|sidewalk|paver|tile|quartz|granit|marble|m[áa]rmore|terrazzo|stone|pedra/i,
