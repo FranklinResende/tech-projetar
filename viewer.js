@@ -258,11 +258,19 @@
     { re: /led|luminoso|neon|lamp|light|luz/i,                   metal: 0.00, rug: 0.22 },
     { re: /acm|pintura|paint|esmalte|laca|automotiv/i,           metal: 0.05, rug: 0.34 },
     { re: /adesiv|vinil|lona|impress|grafic|gr[áa]fic/i,         metal: 0.00, rug: 0.45 },
-    { re: /concreto|cimento|piso|asfalto|blacktop|paver|tile/i,  metal: 0.00, rug: 0.93 },
-    { re: /grama|folha|planta|[áa]rvore|vegeta|daun|batang/i,    metal: 0.00, rug: 0.88 },
+    { re: /concret|cimento|cement|piso|floor|asfalto|asphalt|blacktop|pavement|cal[çc]ada|sidewalk|paver|tile|quartz|granit|marble|m[áa]rmore|terrazzo|stone|pedra/i,
+                                                                 metal: 0.00, rug: 0.93 },
+    { re: /grama|grass|folha|leaf|planta|plant|[áa]rvore|tree|vegeta|foliage|hedge|daun|batang/i,
+                                                                 metal: 0.00, rug: 0.88 },
+    { re: /madeira|wood|timber|mdf|compensad/i,                  metal: 0.00, rug: 0.72 },
     { re: /tecido|linen|fabric|couro|leather/i,                  metal: 0.00, rug: 0.90 },
     { re: /borracha|rubber|pneu|tire/i,                          metal: 0.00, rug: 0.95 },
   ];
+  /* Os nomes vem do SketchUp e chegam quase sempre em ingles. A primeira
+     versao desta tabela so falava portugues e deixava o piso do posto sem
+     tratamento. Ao acrescentar material novo, escreva nas duas linguas.
+     Atencao: aqui so se ajusta BRILHO e RUGOSIDADE. Cor nao se toca --
+     o cliente aprova cor de marca por esta tela. */
 
   // materiais já tratados, para não mexer duas vezes nem perder os que
   // chegam atrasados (o modelo carrega em partes)
